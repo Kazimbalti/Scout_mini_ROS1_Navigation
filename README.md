@@ -106,7 +106,8 @@ Before running any command below, source devel/setup.bash
         ```
         roslaunch scout_slam gmapping_save.launch map_file:=(file name)
         ```
-        ![slam_mymap](https://github.com/Kazimbalti/Scout_mini_ROS1_Navigation/assets/32608321/94f9449f-5e7a-45a9-8759-fc99e34cc1c5)
+![slam_mymap](https://github.com/Kazimbalti/Scout_mini_ROS1_Navigation/assets/32608321/af47398a-2c7d-4257-824d-7703aca189a9)
+
 
 Now close everything.
 
