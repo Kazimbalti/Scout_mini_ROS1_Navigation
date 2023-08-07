@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<!-- Reference -->
+<!-- https://github.com/lmark1/velodyne_simulator -->
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="scout_lidar">
+    <xacro:macro name="scout_3d_lidar" params="parent_link topicName:=/velodyne/points xyz rpy gpu:=false visualize:=false">
+        <xacro:property name="M_PI" value="3.1415926535897931" />
+        <xacro:property name="hz" default="10" />
+        <xacro:property name="samples" default="220" />
+        <xacro:property name="min_range" default="0.9" />
+        <xacro:property name="max_range" default="130.0" />
+        <xacro:property name="min_angle" default="-${M_PI}" />
+        <xacro:property name="max_angle" default="${M_PI}" />
+
+        <xacro:include filename="$(find velodyne_description)/urdf/HDL-32E.urdf.xacro"/>
+        <xacro:HDL-32E parent="${parent_link}" name="velodyne2" topic="${topicName}" hz="${hz}" samples="${samples}" gpu="${gpu}" visualize="${visualize}" min_range="${min_range}" max_range="${max_range}" min_angle="${min_angle}" max_angle="${max_angle}">
+            <origin xyz="${xyz}" rpy="${rpy}" />
+        </xacro:HDL-32E>
+
+    </xacro:macro>
+</robot>
+

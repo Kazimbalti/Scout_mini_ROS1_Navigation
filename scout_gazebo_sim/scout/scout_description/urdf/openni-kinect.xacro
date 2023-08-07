@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+
+<!-- Reference -->
+<!-- https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#Camera -->
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="scout_camera">
+
+    <xacro:macro name="scout_camera" params="parent_link name topics_ns:=camera publish_pointcloud:=false visualize:=false xyz rpy">
+        <joint name="camera_joint" type="fixed">
+            <axis xyz="0 1 0" />
+            <parent link="${parent_link}"/>
+            <child link="openni_kinect_link"/>
+            <origin xyz="${xyz}" rpy="${rpy}" />
+        </joint>
+
+        <!-- Camera -->
+        <link name="openni_kinect_link">
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="0.02 0.05 0.02"/>
+                </geometry>
+            </collision>
+
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="0.02 0.05 0.02"/>
+                </geometry>
+            </visual>
+
+            <inertial>
+                <mass value="1e-5" />
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+            </inertial>
+        </link>
+
+        <!-- camera -->
+        <gazebo reference="openni_kinect_link">
+            <sensor name="openni_kinect_camera" type="depth">
+                <update_rate>20</update_rate>
+                <camera>
+                    <horizontal_fov>1.047198</horizontal_fov>
+                    <image>
+                        <width>640</width>
+                        <height>480</height>
+                        <format>R8G8B8</format>
+                    </image>
+                    <clip>
+                        <near>0.1</near>
+                        <far>100</far>
+                    </clip>
+                </camera>
+                <plugin name="$openni_kinect_controller" filename="libgazebo_ros_openni_kinect.so">
+                <baseline>0.2</baseline>
+                <alwaysOn>true</alwaysOn>
+                <updateRate>1.0</updateRate>
+                <cameraName>${name}_ir</cameraName>
+                <imageTopicName>/${name}/color/image_raw</imageTopicName>
+                <cameraInfoTopicName>/${name}/color/camera_info</cameraInfoTopicName>
+                <depthImageTopicName>/${name}/depth/image_raw</depthImageTopicName>
+                <depthImageInfoTopicName>/${name}/depth/camera_info</depthImageInfoTopicName>
+                <pointCloudTopicName>/${name}/depth/points</pointCloudTopicName>
+                <frameName>openni_kinect_link</frameName>
+                <pointCloudCutoff>0.5</pointCloudCutoff>
+                <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+                <distortionK1>0.00000001</distortionK1>
+                <distortionK2>0.00000001</distortionK2>
+                <distortionK3>0.00000001</distortionK3>
+                <distortionT1>0.00000001</distortionT1>
+                <distortionT2>0.00000001</distortionT2>
+                <CxPrime>0</CxPrime>
+                <Cx>0</Cx>
+                <Cy>0</Cy>
+                <focalLength>0</focalLength>
+                <hackBaseline>0</hackBaseline>
+                </plugin>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+</robot>
+

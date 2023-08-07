@@ -1,0 +1,244 @@
+<?xml version="1.0"?>
+
+<robot name="scout_mini" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:arg name="robot_namespace" default="/" />
+    <xacro:arg name="urdf_extras" default="empty.urdf" />
+
+    <!-- Sensors Configuration -->
+    <xacro:arg name="hokuyo_lidar"  default="true"      />
+    <xacro:arg name="velodyne_lidar"  default="false"     />
+    <xacro:arg name="camera"    default="true"      />
+    <xacro:arg name="imu"       default="true"      />
+    <xacro:arg name="gps"       default="true"      />
+    <xacro:arg name="visualize" default="false"     />
+    
+    <!-- GPU setting for Lidar processing -->
+    <xacro:arg name="gpu"       default="true"      />
+    <xacro:property name="gpu"  value="$(arg gpu)"  />
+
+    <!-- Lidar Common parameters -->
+    <xacro:arg name="lidar_x"       default="0"     />
+    <xacro:arg name="lidar_y"       default="0"     />
+    <xacro:arg name="lidar_z"       default="0.14"  />
+    <xacro:arg name="lidar_roll"    default="0"     />
+    <xacro:arg name="lidar_pitch"   default="0"     />
+    <xacro:arg name="lidar_yaw"     default="0"     />
+    <xacro:property name="lidar_pose" default="$(arg lidar_x) $(arg lidar_y) $(arg lidar_z)" />
+    <xacro:property name="lidar_orientation" default="$(arg lidar_roll) $(arg lidar_pitch) $(arg lidar_yaw)" />
+    
+    <!-- 3D Lidar parameters -->
+    <!-- 3d_lidar : VLP-16, HDL32E -->
+    <xacro:arg name="velodyne_lidar_name" default="VLP-16" />
+    <!-- <xacro:arg name="velodyne_lidar_name" default="HDL-32E" />  -->
+
+    <!-- Camera Common parameters -->
+    <xacro:arg name="camera_x"       default="0.2" />
+    <xacro:arg name="camera_y"       default="0"    />
+    <xacro:arg name="camera_z"       default="0.1"  />
+    <xacro:arg name="camera_roll"    default="0"    />
+    <xacro:arg name="camera_pitch"   default="0"    />
+    <xacro:arg name="camera_yaw"     default="0"    />
+    <xacro:property name="camera_pose" default="$(arg camera_x) $(arg camera_y) $(arg camera_z) " />
+    <xacro:property name="camera_orientation" default="$(arg camera_roll) $(arg camera_pitch) $(arg camera_yaw) " />
+
+    <!-- Camera : rgb, openni-kinect, realsense-d435 -->
+    <!-- <xacro:arg name="camera_name" default="rgb" /> -->
+    <!-- <xacro:arg name="camera_name" default="openni-kinect" /> -->
+    <xacro:arg name="camera_name" default="realsense-d435" />
+
+    <!-- openni-kinct, realsense parameters -->
+    <xacro:arg name="camera_pointcloud" default="true" />
+    
+
+    <!-- IMU parameters -->
+    <xacro:arg name="imu_x"               default="-0.1"  />
+    <xacro:arg name="imu_y"               default="0"     />
+    <xacro:arg name="imu_z"               default="0.07"  />
+    <xacro:arg name="imu_roll"            default="0"     />
+    <xacro:arg name="imu_pitch"           default="0"     />
+    <xacro:arg name="imu_yaw"             default="0"     />
+    <xacro:property name="imu_pose" default="$(arg imu_x) $(arg imu_y) $(arg imu_z)" />
+    <xacro:property name="imu_orientation" default="$(arg imu_roll) $(arg imu_pitch) $(arg imu_yaw) " />
+
+    <!-- GPS parameters -->
+    <xacro:arg name="gps_x"               default="-0.1"  />
+    <xacro:arg name="gps_y"               default="0.05"  />
+    <xacro:arg name="gps_z"               default="0.07"  />
+    <xacro:arg name="gps_roll"            default="0"     />
+    <xacro:arg name="gps_pitch"           default="0"     />
+    <xacro:arg name="gps_yaw"             default="0"     />
+    <xacro:property name="gps_pose" default="$(arg gps_x) $(arg gps_y) $(arg gps_z)" />
+    <xacro:property name="gps_orientation" default="$(arg gps_roll) $(arg gps_pitch) $(arg gps_yaw)" />
+
+
+    <!-- SCOUT mini wheel 3D file -->
+    <xacro:include filename="$(find scout_description)/urdf/scout_mini_wheel_1.xacro" />
+    <xacro:include filename="$(find scout_description)/urdf/scout_mini_wheel_2.xacro" />
+    <xacro:include filename="$(find scout_description)/urdf/scout_mini_wheel_3.xacro" />
+    <xacro:include filename="$(find scout_description)/urdf/scout_mini_wheel_4.xacro" />
+
+    <!-- Variables -->
+    <xacro:property name="M_PI" value="3.14159"/>
+
+    <!-- Vehicle Geometries -->
+    <xacro:property name="base_x_size" value="0.6200000" />
+    <xacro:property name="base_y_size" value="0.585000" />
+    <xacro:property name="base_z_size" value="0.235000" />
+
+    <xacro:property name="wheelbase" value="0.463951"/>
+    <xacro:property name="track" value="0.416503"/>
+    <xacro:property name="wheel_vertical_offset" value="-0.100998" />
+    <xacro:property name="wheel_length" value="0.8e-01" />
+    <!-- <xacro:property name="wheel_radius" value="1.600e-01" /> -->
+
+    <!-- SCOUT mini wheel radius is 0.8e-01 -->
+    <xacro:property name="wheel_radius" value="0.8e-01" />
+
+    <link name="base_footprint">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </link>
+
+     <joint name="base_footprint_joint" type="fixed">
+        <origin xyz="0 0 ${-wheel_vertical_offset + wheel_radius}" rpy="0 0 0" />
+        <parent link="base_footprint" />
+        <child link="base_link" />
+    </joint>
+
+    <!-- Base link -->
+    <link name="base_link">
+        <visual>
+            <origin
+                    xyz="0 0 0.0"
+                    rpy="1.57 0 -1.57" />
+            <geometry>
+                <mesh filename="package://scout_description/meshes/scout_mini_base_link2.dae" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 0 -1.57" />
+            <geometry>
+                <mesh filename="package://scout_description/meshes/scout_mini_base_link2.dae" />
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- <joint name="chassis_link_joint" type="fixed">
+        <origin xyz="0 0 ${wheel_radius - wheel_vertical_offset}" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="chassis_link" />
+    </joint> -->
+
+    <link name="inertial_link">
+        <inertial>
+            <mass value="60" />
+            <origin xyz="0.0 0.0 0.0" />
+            <inertia ixx="2.288641" ixy="0" ixz="0" iyy="5.103976" iyz="0" izz="3.431465" />
+        </inertial>
+    </link>
+
+    <joint name="inertial_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="inertial_link" />
+    </joint>
+
+    <!-- For testing, hang the robot up in the air -->
+    <!-- <link name="world" />
+    <joint name="world_to_base_link=" type="fixed">
+        <origin xyz="0 0 0.5" rpy="0 0 0" />
+        <parent link="world"/>
+        <child link="base_link"/>
+    </joint> -->
+
+    <!-- Scout wheel macros -->
+    <!-- wheel labeled from 0 to 3, conter-clockwise, starting from front right wheel -->
+    <!-- motor 1 and 2 (left side) are mechanically installed in a reversed direction -->
+    <xacro:scout_mini_wheel_1 wheel_prefix="front_left">
+    <!--<origin
+            xyz="0 0 0"
+            rpy="0 0 0" />-->
+        <origin xyz="${wheelbase/2} ${track/2} ${wheel_vertical_offset}" rpy="-1.57 0 0" />
+    </xacro:scout_mini_wheel_1>
+    <xacro:scout_mini_wheel_2 wheel_prefix="rear_left">
+    <!--<origin
+            xyz="0 0 0"
+            rpy="0 0 0" />-->
+        <origin xyz="${-wheelbase/2} ${track/2} ${wheel_vertical_offset}" rpy="-1.57 0 0" />
+    </xacro:scout_mini_wheel_2>
+    <xacro:scout_mini_wheel_3 wheel_prefix="front_right">
+    <!--<origin
+            xyz="0 0 0"
+            rpy="0 0 0" />-->
+        <origin xyz="${wheelbase/2} ${-track/2} ${wheel_vertical_offset+0.001}" rpy="1.57 0 0" />
+    </xacro:scout_mini_wheel_3>
+    <xacro:scout_mini_wheel_4 wheel_prefix="rear_right">
+    <!--<origin
+           xyz="0 0 0"
+           rpy="0 0 0" />-->
+        <origin xyz="${-wheelbase/2} ${-track/2} ${wheel_vertical_offset+0.001}" rpy="1.57 0 0" />
+    </xacro:scout_mini_wheel_4>
+
+    <!-- Additional definitions -->
+    <xacro:include filename="$(arg urdf_extras)" />
+
+    <!-- Gazebo definitions  -->
+    <xacro:include filename="$(find scout_description)/urdf/scout_mini.gazebo" />
+
+    <gazebo>
+        <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
+            <alwaysOn>true</alwaysOn>
+            <updateRate>50.0</updateRate>
+            <bodyName>base_link</bodyName>
+            <topicName>odom_gazebo</topicName>
+            <gaussianNoise>0.0</gaussianNoise>
+            <frameName>map</frameName>
+            <xyzOffsets>0 0 0</xyzOffsets>
+            <rpyOffsets>0 0 0</rpyOffsets>
+        </plugin>
+    </gazebo>
+
+
+    <!-- SENSORS -->
+    <!-- SENSORS -->
+    <!-- SENSORS -->
+    <!-- SENSORS -->
+    <!-- SENSORS -->
+    
+
+    <!-- 2D hokuyo lidar -->
+    <xacro:if value="$(arg hokuyo_lidar)" >
+        <xacro:include filename="$(find scout_description)/urdf/hokuyo_2d.xacro" />
+        <xacro:hokuyo_lidar parent_link="base_link" visualize="$(arg visualize)" gpu="${gpu}">
+            <origin xyz="${lidar_pose}" rpy="${lidar_orientation}" />
+        </xacro:hokuyo_lidar>
+    </xacro:if>
+
+    <!-- 3D Velodyne lidar -->
+    <xacro:if value="$(arg velodyne_lidar)" >
+        <xacro:include filename="$(find scout_description)/urdf/$(arg velodyne_lidar_name).xacro" />
+        <xacro:scout_3d_lidar parent_link="base_link" visualize="$(arg visualize)" gpu="${gpu}" xyz="${lidar_pose}" rpy="${lidar_orientation}" />
+    </xacro:if>
+
+    <!-- Camera -->
+    <xacro:if value="$(arg camera)" >
+        <xacro:include filename="$(find scout_description)/urdf/$(arg camera_name).xacro" />
+        <xacro:scout_camera parent_link="base_link" name="camera" topics_ns="camera" publish_pointcloud="$(arg camera_pointcloud)" visualize="$(arg visualize)" xyz="${camera_pose}" rpy="${camera_orientation}" />
+    </xacro:if>
+
+    <!-- IMU -->
+    <xacro:if value="$(arg imu)" >
+        <xacro:include filename="$(find scout_description)/urdf/imu.xacro" />
+        <xacro:IMU parent_link="base_link" >
+            <origin xyz="${imu_pose}" rpy="${imu_orientation}" />
+        </xacro:IMU>  
+    </xacro:if>
+
+    <!-- GPS -->
+    <xacro:if value="$(arg gps)" >
+        <xacro:include filename="$(find scout_description)/urdf/gps.xacro" />
+        <xacro:GPS parent_link="base_link" >
+            <origin xyz="${gps_pose}" rpy="${gps_orientation}" />
+        </xacro:GPS>  
+    </xacro:if>
+
+</robot>

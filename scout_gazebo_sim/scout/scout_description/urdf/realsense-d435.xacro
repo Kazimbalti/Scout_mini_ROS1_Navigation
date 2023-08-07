@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<!-- Reference -->
+<!-- https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#Camera -->
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="scout_camera">
+
+    <xacro:macro name="scout_camera" params="parent_link name topics_ns:=camera publish_pointcloud:=false visualize:=false xyz rpy">
+
+    <xacro:include filename="$(find scout_description)/urdf/_d435.urdf.xacro" />
+    <xacro:sensor_d435 parent="${parent_link}" name="camera" topics_ns="camera" publish_pointcloud="$(arg camera_pointcloud)" visualize="$(arg visualize)">
+        <origin xyz="${xyz}" rpy="${rpy}" />
+    </xacro:sensor_d435>
+
+    </xacro:macro>
+</robot>
+

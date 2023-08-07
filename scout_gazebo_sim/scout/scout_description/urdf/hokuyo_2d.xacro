@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+
+<!-- Reference -->
+<!-- https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#GPULaser -->
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="scout_lidar">
+    <xacro:macro name="hokuyo_lidar" params="parent_link visualize:=false *joint_pose gpu:=false">
+        <xacro:property name="topicName"    default="/hokuyo/scan" />
+        <xacro:property name="samples"      default="720"          />
+        <xacro:property name="min_range"    default="0.10"         />
+        <xacro:property name="max_range"    default="15.0"         />
+        <xacro:property name="min_angle"    default="-3.1415"      />
+        <xacro:property name="max_angle"    default="3.1415"       />
+        
+        <link name="hokuyo_link">
+            <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+            <box size="0.1 0.1 0.1"/>
+            </geometry>
+            </collision>
+
+            <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://scout_description/meshes/hokuyo.dae"/>
+            </geometry>
+            </visual>
+
+            <inertial>
+            <mass value="1e-5" />
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+            </inertial>
+        </link>
+
+         <joint name="hokuyo_joint" type="fixed">
+            <axis xyz="0 1 0" />
+            <parent link="${parent_link}"/>
+            <child link="hokuyo_link"/>
+            <xacro:insert_block name="joint_pose"/>
+        </joint>
+
+        <xacro:if value="${gpu}">
+            <gazebo reference="hokuyo_link">
+                <!-- You need to change LiDAR plugin -->
+                <!-- <sensor type="ray" name="head_hokuyo_sensor"> -->
+                <sensor type="gpu_ray" name="head_hokuyo_sensor">
+                <pose>0 0 0 0 0 0</pose>
+                <visualize>${visualize}</visualize>
+                <update_rate>40</update_rate>
+                <ray>
+                    <scan>
+                    <horizontal>
+                        <samples>${samples}</samples>
+                        <resolution>1</resolution>
+                        <!-- <min_angle>-1.570796</min_angle>
+                        <max_angle>1.570796</max_angle> -->
+                        <min_angle>${min_angle}</min_angle>
+                        <max_angle>${max_angle}</max_angle>
+                    </horizontal>
+                    </scan>
+                    <range>
+                    <min>${min_range}</min>
+                    <max>${max_range}</max>
+                    <resolution>0.01</resolution>
+                    </range>
+                    <noise>
+                    <type>gaussian</type>
+                    <!-- Noise parameters based on published spec for Hokuyo laser
+                        achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+                        stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+                        reading. -->
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                    </noise>
+                </ray>
+                <!-- <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so"> -->
+                <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_gpu_laser.so">
+                    <topicName>${topicName}</topicName>
+                    <frameName>hokuyo_link</frameName>
+                </plugin>
+                </sensor>
+            </gazebo>
+        </xacro:if>
+        <xacro:unless value="${gpu}">
+            <gazebo reference="hokuyo_link">
+                <!-- You need to change LiDAR plugin -->
+                <!-- <sensor type="ray" name="head_hokuyo_sensor"> -->
+                <sensor type="ray" name="head_hokuyo_sensor">
+                <pose>0 0 0 0 0 0</pose>
+                <visualize>${visualize}</visualize>
+                <update_rate>40</update_rate>
+                <ray>
+                    <scan>
+                    <horizontal>
+                        <samples>${samples}</samples>
+                        <resolution>1</resolution>
+                        <!-- <min_angle>-1.570796</min_angle>
+                        <max_angle>1.570796</max_angle> -->
+                        <min_angle>${min_angle}</min_angle>
+                        <max_angle>${max_angle}</max_angle>
+                    </horizontal>
+                    </scan>
+                    <range>
+                    <min>${min_range}</min>
+                    <max>${max_range}</max>
+                    <resolution>0.01</resolution>
+                    </range>
+                    <noise>
+                    <type>gaussian</type>
+                    <!-- Noise parameters based on published spec for Hokuyo laser
+                        achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+                        stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+                        reading. -->
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                    </noise>
+                </ray>
+                <!-- <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so"> -->
+                <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+                    <topicName>${topicName}</topicName>
+                    <frameName>hokuyo_link</frameName>
+                </plugin>
+                </sensor>
+            </gazebo>
+        </xacro:unless>
+    </xacro:macro>
+</robot>
+
