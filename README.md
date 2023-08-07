@@ -2,15 +2,19 @@
 Implementation of Autonomous driving of scout_mini in gazebo simulator using SLAM+EKF+Point_Cloud+GMAPPING
 
 ### **1. Installation**
+```
 1. mkdir -p ~/scout_ws/src
 2. cd ~/scout_ws/src
 3. Clone this repository in your src as
    git clone
 4. chmod +x install_packages.sh && ./setup.sh
+```
    mapping, Navigation, Robot_localization packages will be downloaded
+```
 5. rosdep install --from-paths src --ignore-src -r -y
 6. catkin_make
 7. source devel/setup.bash
+```
    **rosdep install** command will automatically install the required dependencies for the packages in the workspace. The dependencies are listed in CMakeLists.txt file in the packages.
 
 ### **2. Usage**
