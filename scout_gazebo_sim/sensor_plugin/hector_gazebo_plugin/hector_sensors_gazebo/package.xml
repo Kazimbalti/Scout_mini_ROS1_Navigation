@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>hector_sensors_gazebo</name>
+  <version>0.5.4</version>
+  <description>hector_sensors_gazebo depends on the necessary plugins for using the sensors from the hector_models repository.</description>
+  <maintainer email="fabian@sim.tu-darmstadt.de">Stefan Fabian</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/hector_sensors_gazebo</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author email="kohlbrecher@sim.tu-darmstadt.de">Stefan Kohlbrecher</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <exec_depend>hector_sensors_description</exec_depend>
+  <exec_depend>gazebo_plugins</exec_depend>
+  <exec_depend>hector_gazebo_plugins</exec_depend>
+
+</package>
