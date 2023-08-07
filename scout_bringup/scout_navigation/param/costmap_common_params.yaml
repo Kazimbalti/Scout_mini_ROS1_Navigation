@@ -1,0 +1,15 @@
+obstacle_range: 6.0
+raytrace_range: 7.0
+
+# The height of scout_mini : 0.371
+max_obstacle_height: 0.39
+
+footprint: [[-0.32, -0.31], [-0.32, 0.31], [0.32, 0.31], [0.32, -0.31]]
+#robot_radius: 0.105
+
+inflation_radius: 1.0
+cost_scaling_factor: 3.0
+
+map_type: costmap
+observation_sources: scan
+scan: {sensor_frame: hokuyo_link, data_type: LaserScan, topic: /hokuyo/scan, marking: true, clearing: true}

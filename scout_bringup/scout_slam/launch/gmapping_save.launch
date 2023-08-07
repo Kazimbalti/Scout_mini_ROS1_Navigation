@@ -1,0 +1,4 @@
+<launch> 
+  <arg name="map_file" default="map1" />
+  <node pkg="map_server" type="map_saver" name="map_saver" args="-f $(find scout_slam)/maps/$(arg map_file)" />
+</launch>

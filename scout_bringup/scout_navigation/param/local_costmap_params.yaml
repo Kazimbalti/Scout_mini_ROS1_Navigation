@@ -1,0 +1,16 @@
+local_costmap:
+  global_frame: odom
+  robot_base_frame: base_footprint
+
+  update_frequency: 10.0
+  publish_frequency: 10.0
+  transform_tolerance: 0.2
+
+  static_map: false
+  rolling_window: true
+  width: 6
+  height: 6
+  resolution: 0.025 # this value should be larger than lidar resolution (it means that lidar resolution must be higher than local or global map resolution)
+
+  inflation_radius: 1.25
+  cost_scaling_factor: 2.58

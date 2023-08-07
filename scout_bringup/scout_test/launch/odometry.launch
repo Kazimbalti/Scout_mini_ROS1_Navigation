@@ -1,0 +1,17 @@
+<launch>
+
+    <arg name="pub_cmd_tf" default="false" />
+    <arg name="open_rviz" default="false" />
+
+    <include file="$(find scout_gazebo_sim)/launch/scout_mini_empty_world.launch">
+        <arg name="open_rviz" value="$(arg open_rviz)" />
+    </include>
+
+    <include file="$(find scout_base)/launch/scout_mini_base.launch">
+        <arg name="pub_tf" value="$(arg pub_cmd_tf)" />
+    </include>
+    <include file="$(find scout_filter)/launch/ekf_filter_cmd.launch" />
+    <include file="$(find odom_converter)/launch/odom_converter.launch" />
+        
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find scout_test)/rviz/odometry.rviz" />
+</launch>

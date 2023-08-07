@@ -1,0 +1,23 @@
+<launch>
+    <!-- Arguments -->
+    <arg name="slam_methods" default="gmapping" doc="slam type [gmapping, cartographer, hector, karto, frontier_exploration]" />
+    <arg name="open_rviz" default="true" />
+
+    <arg name="scan_topic" default="hokuyo/scan" />
+    <arg name="base_frame" default="base_footprint" />
+    <arg name="odom_frame" default="odom" />
+    <arg name="map_frame" default="map" />
+
+    <include file="$(find scout_slam)/launch/scout_$(arg slam_methods).launch">
+        <arg name="scan_topic" value="$(arg scan_topic)" />
+        <arg name="set_base_frame" value="$(arg base_frame)" />
+        <arg name="set_odom_frame" value="$(arg odom_frame)" />
+        <arg name="set_map_frame" value="$(arg map_frame)" />
+    </include>
+
+    <!-- rviz -->
+    <group if="$(arg open_rviz)">
+        <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find scout_slam)/rviz/scout_$(arg slam_methods).rviz" />
+    </group>
+
+</launch>

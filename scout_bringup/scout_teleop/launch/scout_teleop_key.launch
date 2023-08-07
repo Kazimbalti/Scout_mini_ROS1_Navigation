@@ -1,0 +1,9 @@
+<launch>
+
+  <arg name="cmd_vel_topic" value="cmd_vel" />
+
+  <!-- scout_teleop_key already has its own built in velocity smoother -->
+  <node pkg="scout_teleop" type="scout_teleop_key" name="scout_teleop_keyboard"  output="screen" >
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)" />
+  </node>
+</launch>

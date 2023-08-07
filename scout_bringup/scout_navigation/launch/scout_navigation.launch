@@ -1,0 +1,56 @@
+<launch>
+    <arg name="map_file"                  default="mymap.yaml" />
+    <arg name="open_rviz"                 default="true" />
+    
+    <arg name="initial_pose_x"            default="0.0" />
+    <arg name="initial_pose_y"            default="0.0" />
+    <arg name="initial_pose_a"            default="0.0" />
+
+    <!-- AMCL parameters -->
+    <arg name="scan_topic"                default="hokuyo/scan" />
+
+    <arg name="odom_model_type"           default="diff"/>
+    <arg name="odom_alpha1"               default="0.2"/>
+    <arg name="odom_alpha2"               default="0.2"/>
+    <arg name="odom_alpha3"               default="0.2"/>
+    <arg name="odom_alpha4"               default="0.2"/>
+    <arg name="odom_frame_id"             default="odom"/>
+    <arg name="base_frame_id"             default="base_footprint"/>
+
+    <!-- move_base parameters -->
+    <arg name="move_forward_only"         default="false" />
+    <!-- <arg name="odom_topic"                default="odom_cmd" /> -->
+    <arg name="odom_topic"                default="odometry/filtered" />
+    
+    <!-- Map server -->
+    <node pkg="map_server" name="map_server" type="map_server" args="$(find scout_slam)/maps/$(arg map_file)" />
+
+    <!-- AMCL -->
+    <include file="$(find scout_navigation)/launch/amcl.launch" >
+        <arg name="scan_topic" value="$(arg scan_topic)" />
+        <arg name="initial_pose_x"            value="$(arg initial_pose_x)" />
+        <arg name="initial_pose_y"            value="$(arg initial_pose_y)" />
+        <arg name="initial_pose_a"            value="$(arg initial_pose_a)" />
+        <arg name="odom_model_type"           value="$(arg odom_model_type)"/>
+        <arg name="odom_alpha1"               value="$(arg odom_alpha1)"/>
+        <arg name="odom_alpha2"               value="$(arg odom_alpha2)"/>
+        <arg name="odom_alpha3"               value="$(arg odom_alpha3)"/>
+        <arg name="odom_alpha4"               value="$(arg odom_alpha4)"/>
+        <arg name="odom_frame_id"             value="$(arg odom_frame_id)"/>
+        <arg name="base_frame_id"             value="$(arg base_frame_id)"/>
+    </include>
+
+    <!-- move_base -->
+    <include file="$(find scout_navigation)/launch/move_base.launch" >
+        <arg name="move_forward_only" value="$(arg move_forward_only)" />
+        <arg name="odom_topic" value="$(arg odom_topic)" />
+    </include>
+
+    <!-- EKF Localization -->
+    <!-- <include file="$(find scout_navigation)/launch/ekf_filter.launch" /> -->
+
+    <!-- rviz -->
+    <group if="$(arg open_rviz)">
+        <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find scout_navigation)/rviz/scout_navigation.rviz" />
+    </group>
+</launch>
